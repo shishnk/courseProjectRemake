@@ -3,8 +3,63 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net6.0</TargetFramework>
+    <EnablePreviewFeatures>True</EnablePreviewFeatures>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
+
+   <ItemGroup>
+     <Using Include="System.ComponentModel" />
+     <Using Include="Newtonsoft.Json" />
+     <Using Include="Newtonsoft.Json.Linq" />
+     <Using Include="System.Collections.Immutable" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="System.Runtime.Experimental" Version="6.0.2" />
+  </ItemGroup>
+
+   <ItemGroup>
+     <None Update="forGraphics\allPoints.txt">
+       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+     </None>
+     <None Update="forGraphics\elements.txt">
+       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+     </None>
+     <None Update="forGraphics\pointsLinear.txt">
+       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+     </None>
+     <None Update="input\DirichletBoundaries.json">
+       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+     </None>
+     <None Update="input\Grz.txt">
+       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+     </None>
+     <None Update="input\Mrz.txt">
+       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+     </None>
+     <None Update="input\NeumannBoundaries.json">
+       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+     </None>
+     <None Update="input\spaceGrid.jsonc">
+       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+     </None>
+     <None Update="input\timeGrid.json">
+       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+     </None>
+     <None Update="results\err.txt">
+       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+     </None>
+     <None Update="results\Exact.txt">
+       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+     </None>
+     <None Update="results\matrix.txt">
+       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+     </None>
+     <None Update="results\q.txt">
+       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+     </None>
+     <None Update="results\rms.txt">
+       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+     </None>
+   </ItemGroup>
 
 </Project>
