@@ -1,0 +1,20 @@
+{
+  "Initial area in R": {
+    "Left Border": 1.0,
+    "Right Border": 5.0
+  },
+  "Splits by R": 8,
+
+  "Initial area in Z": {
+    "Left Border": 0.0,
+    "Right Border": 1.0
+  },
+  "Splits by Z": 4,
+
+  /*Коэффициент разрядки*/
+  "Coef": null,
+
+  /*Uniform area*/
+  "Lambda": 1.0,
+  "Sigma": 0.0
+}

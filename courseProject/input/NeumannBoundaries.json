@@ -1,0 +1,22 @@
+[
+  {
+    "Element": 0,
+    "Edge": 1,
+    "Value": -2.0
+  },
+  {
+    "Element": 8,
+    "Edge": 1,
+    "Value": -2.0
+  },
+  {
+    "Element": 7,
+    "Edge": 2,
+    "Value": 10
+  },
+  {
+    "Element": 15,
+    "Edge": 2,
+    "Value": 10
+  }
+]

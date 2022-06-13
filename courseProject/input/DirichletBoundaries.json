@@ -1,0 +1,34 @@
+[
+  {
+    "Element": 0,
+    "Edge": 1
+  },
+  {
+    "Element": 16,
+    "Edge": 1
+  },
+  {
+    "Element": 32,
+    "Edge": 1
+  },
+  {
+    "Element": 48,
+    "Edge": 1
+  },
+  {
+    "Element": 15,
+    "Edge": 2
+  },
+  {
+    "Element": 31,
+    "Edge": 2
+  },
+  {
+    "Element": 47,
+    "Edge": 2
+  },
+  {
+    "Element": 63,
+    "Edge": 2
+  }
+]
