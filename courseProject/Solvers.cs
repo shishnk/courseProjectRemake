@@ -203,6 +203,9 @@ public class CGMCholesky : Solver
     {
         try
         {
+            ArgumentNullException.ThrowIfNull(_matrix, $"{nameof(_matrix)} cannot be null, set the matrix");
+            ArgumentNullException.ThrowIfNull(_vector, $"{nameof(_vector)} cannot be null, set the vector");
+
             double alpha, beta;
             double tmp;
 
