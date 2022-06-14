@@ -203,7 +203,7 @@ public class FEM
 
     private void Solve()
     {
-        for (int itime = 3; itime < 4; itime++)
+        for (int itime = 3; itime < _timeGrid.Points.Length; itime++)
         {
             double t03 = _timeGrid.Points[itime] - _timeGrid.Points[itime - 3];
             double t02 = _timeGrid.Points[itime] - _timeGrid.Points[itime - 2];
