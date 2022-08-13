@@ -2,8 +2,8 @@ namespace courseProject;
 
 public class QuadratureNode<T> where T : notnull
 {
-    public T Node { get; init; }
-    public double Weight { get; init; }
+    public T Node { get; }
+    public double Weight { get; }
 
     public QuadratureNode(T node, double weight)
     {
@@ -14,7 +14,7 @@ public class QuadratureNode<T> where T : notnull
 
 public class Quadrature<T> where T : notnull
 {
-    private readonly QuadratureNode<T>[] _nodes = default!;
+    private readonly QuadratureNode<T>[] _nodes;
     public ImmutableArray<QuadratureNode<T>> Nodes => _nodes.ToImmutableArray();
 
     public Quadrature(QuadratureNode<T>[] nodes)
