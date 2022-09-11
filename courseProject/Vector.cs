@@ -1,29 +1,29 @@
 namespace courseProject;
 
-public class Vector<T> where T : INumber<T>
+public class Vector<T> : IEnumerable<T> where T : INumber<T>
 {
-    private readonly T[] vec;
-    public int Length { get; init; }
+    private readonly T[] _storage;
+    public int Length { get; }
 
     public T this[int index]
     {
-        get => vec[index];
-        set => vec[index] = value;
+        get => _storage[index];
+        set => _storage[index] = value;
     }
 
     public Vector(int dim)
     {
-        vec = new T[dim];
+        _storage = new T[dim];
         Length = dim;
     }
 
-    public static T operator *(Vector<T> firstVec, Vector<T> secondVec)
+    public static T operator *(Vector<T> a, Vector<T> b)
     {
         T result = T.Zero;
 
-        for (int i = 0; i < firstVec.Length; i++)
+        for (int i = 0; i < a.Length; i++)
         {
-            result += firstVec[i] * secondVec[i];
+            result += a[i] * b[i];
         }
 
         return result;
@@ -35,31 +35,31 @@ public class Vector<T> where T : INumber<T>
 
         for (int i = 0; i < vector.Length; i++)
         {
-            result.vec[i] = vector[i] * T.Create(constant);
+            result[i] = vector[i] * T.Create(constant);
         }
 
         return result;
     }
 
-    public static Vector<T> operator +(Vector<T> firstVec, Vector<T> secondVec)
+    public static Vector<T> operator +(Vector<T> a, Vector<T> b)
     {
-        Vector<T> result = new(firstVec.Length);
+        Vector<T> result = new(a.Length);
 
-        for (int i = 0; i < firstVec.Length; i++)
+        for (int i = 0; i < a.Length; i++)
         {
-            result.vec[i] = firstVec[i] + secondVec[i];
+            result[i] = a[i] + b[i];
         }
 
         return result;
     }
 
-    public static Vector<T> operator -(Vector<T> firstVec, Vector<T> secondVec)
+    public static Vector<T> operator -(Vector<T> a, Vector<T> b)
     {
-        Vector<T> result = new(firstVec.Length);
+        Vector<T> result = new(a.Length);
 
-        for (int i = 0; i < firstVec.Length; i++)
+        for (int i = 0; i < a.Length; i++)
         {
-            result.vec[i] = firstVec[i] - secondVec[i];
+            result[i] = a[i] - b[i];
         }
 
         return result;
@@ -77,7 +77,7 @@ public class Vector<T> where T : INumber<T>
     {
         for (int i = 0; i < Length; i++)
         {
-            vec[i] = T.Create(value);
+            _storage[i] = T.Create(value);
         }
     }
 
@@ -87,12 +87,22 @@ public class Vector<T> where T : INumber<T>
 
         for (int i = 0; i < Length; i++)
         {
-            result += vec[i] * vec[i];
+            result += _storage[i] * _storage[i];
         }
 
         return Math.Sqrt(Convert.ToDouble(result));
     }
 
     public ImmutableArray<T> ToImmutableArray()
-        => ImmutableArray.Create(vec);
+        => ImmutableArray.Create(_storage);
+
+    public IEnumerator<T> GetEnumerator()
+    {
+        foreach (T value in _storage)
+        {
+            yield return value;
+        }
+    }
+
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }

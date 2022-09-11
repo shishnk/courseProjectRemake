@@ -10,7 +10,7 @@ public interface ITest
 public class Test1 : ITest
 {
     public double U(Point2D point, double t)
-        => (point.R * point.R) + point.Z + t;
+        => point.R * point.R + point.Z + t;
 
     public double F(Point2D point, double t)
         => -3;
@@ -19,10 +19,10 @@ public class Test1 : ITest
 public class Test2 : ITest
 {
     public double U(Point2D point, double t)
-        => (point.R * point.R) - (point.Z * t * t);
+        => point.R * point.R - point.Z * t * t;
 
     public double F(Point2D point, double t)
-        => -8 - (t * point.Z);
+        => -8 - t * point.Z;
 }
 
 public class Test3 : ITest
@@ -31,16 +31,16 @@ public class Test3 : ITest
         => 2 * point.R * point.R * point.R * t * t * t;
 
     public double F(Point2D point, double t)
-        => (-9 * point.R * t * t * t) + (12 * point.R * point.R * point.R * t * t);
+        => -9 * point.R * t * t * t + 12 * point.R * point.R * point.R * t * t;
 }
 
 public class Test4 : ITest
 {
     public double U(Point2D point, double t)
-       => (point.R * point.R * point.R * point.R) + (point.Z * point.Z * point.Z * point.Z) + (t * t * t * t);
+       => point.R * point.R * point.R * point.R + point.Z * point.Z * point.Z * point.Z + t * t * t * t;
 
     public double F(Point2D point, double t)
-        => (-16 * point.R * point.R) - (12 * point.Z * point.Z) + (4 * t * t * t);
+        => -16 * point.R * point.R - 12 * point.Z * point.Z + 4 * t * t * t;
 }
 
 public class Test5 : ITest

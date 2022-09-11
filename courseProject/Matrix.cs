@@ -2,23 +2,23 @@ namespace courseProject;
 
 public class Matrix
 {
-    private readonly double[,] storage;
-    public int Size { get; init; }
+    private readonly double[,] _storage;
+    public int Size { get; }
 
     public double this[int i, int j]
     {
-        get => storage[i, j];
-        set => storage[i, j] = value;
+        get => _storage[i, j];
+        set => _storage[i, j] = value;
     }
 
     public Matrix(int size)
     {
-        storage = new double[size, size];
+        _storage = new double[size, size];
         Size = size;
     }
 
     public void Clear()
-        => Array.Clear(storage, 0, storage.Length);
+        => Array.Clear(_storage, 0, _storage.Length);
 
     public void Copy(Matrix destination)
     {
@@ -26,7 +26,7 @@ public class Matrix
         {
             for (int j = 0; j < destination.Size; j++)
             {
-                destination[i, j] = storage[i, j];
+                destination[i, j] = _storage[i, j];
             }
         }
     }

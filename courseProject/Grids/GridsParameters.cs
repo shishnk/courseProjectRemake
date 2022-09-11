@@ -1,4 +1,4 @@
-namespace courseProject;
+namespace courseProject.Grids;
 
 public class SpaceGridParametersJsonConverter : JsonConverter
 {
@@ -36,29 +36,25 @@ public class SpaceGridParametersJsonConverter : JsonConverter
         writer.WriteEndObject();
     }
 
-    public override object? ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
+    public override object? ReadJson(JsonReader reader, Type objectType, object? existingValue,
+        JsonSerializer serializer)
     {
-        if (reader.TokenType == JsonToken.Null || reader.TokenType != JsonToken.StartObject)
-            return null;
+        if (reader.TokenType == JsonToken.Null || reader.TokenType != JsonToken.StartObject) return null;
 
-        Interval intervalR;
-        Interval intervalZ;
-        int splitsR;
-        int splitsZ;
         double? coef;
-        double lambda, sigma;
+        double sigma;
 
         var maintoken = JObject.Load(reader);
 
         var token = maintoken["Initial area in R"];
-        intervalR = serializer.Deserialize<Interval>(token!.CreateReader());
+        var intervalR = serializer.Deserialize<Interval>(token!.CreateReader());
         token = maintoken["Splits by R"];
-        splitsR = Convert.ToInt32(token);
+        var splitsR = Convert.ToInt32(token);
 
         token = maintoken["Initial area in Z"];
-        intervalZ = serializer.Deserialize<Interval>(token!.CreateReader());
+        var intervalZ = serializer.Deserialize<Interval>(token!.CreateReader());
         token = maintoken["Splits by Z"];
-        splitsZ = Convert.ToInt32(token);
+        var splitsZ = Convert.ToInt32(token);
 
         token = maintoken["Coef"];
 
@@ -72,7 +68,7 @@ public class SpaceGridParametersJsonConverter : JsonConverter
         }
 
         token = maintoken["Lambda"];
-        lambda = Convert.ToDouble(token);
+        var lambda = Convert.ToDouble(token);
 
         token = maintoken["Sigma"];
 
@@ -93,85 +89,49 @@ public class SpaceGridParametersJsonConverter : JsonConverter
 }
 
 [JsonConverter(typeof(SpaceGridParametersJsonConverter))]
-public readonly record struct SpaceGridParameters
+public readonly record struct SpaceGridParameters(Interval IntervalR, int SplitsR, Interval IntervalZ, int SplitsZ,
+    double? K, double Lambda, double Sigma)
 {
-    public Interval IntervalR { get; init; }
-    public int SplitsR { get; init; }
-    public Interval IntervalZ { get; init; }
-    public int SplitsZ { get; init; }
-    public double? K { get; init; }
-
-    // Uniform area
-    public double Lambda { get; init; }
-    public double Sigma { get; init; }
-
-    public SpaceGridParameters(Interval intervalR, int splitsR, Interval intervalZ, int splitsZ, double? k, double lambda, double sigma)
-    {
-        IntervalR = intervalR;
-        SplitsR = splitsR;
-        IntervalZ = intervalZ;
-        SplitsZ = splitsZ;
-        K = k;
-        Lambda = lambda;
-        Sigma = sigma;
-    }
-
     public static SpaceGridParameters? ReadJson(string jsonPath)
     {
         try
         {
             if (!File.Exists(jsonPath))
-                throw new Exception("File does not exist");
-
-            var sr = new StreamReader(jsonPath);
-            using (sr)
             {
-                return JsonConvert.DeserializeObject<SpaceGridParameters>(sr.ReadToEnd());
+                throw new Exception("File does not exist");
             }
+
+            using var sr = new StreamReader(jsonPath);
+            return JsonConvert.DeserializeObject<SpaceGridParameters>(sr.ReadToEnd());
         }
         catch (Exception ex)
         {
             Console.WriteLine($"We had problem: {ex.Message}");
-            return null;
+            throw;
         }
     }
 }
 
-public readonly record struct TimeGridParameters
+public readonly record struct TimeGridParameters([property: JsonProperty("Initial area")]
+    Interval Interval, [property: JsonProperty("Number of splits")]
+    int Splits, [property: JsonProperty("Coef")] double? K)
 {
-    [JsonProperty("Initial area")]
-    public Interval Interval { get; init; }
-
-    [JsonProperty("Number of splits")]
-    public int Splits { get; init; }
-
-    [JsonProperty("Coef")]
-    public double? K { get; init; } // коэффициент разрядки
-
-    public TimeGridParameters(Interval interval, int splits, double? k)
-    {
-        Interval = interval;
-        Splits = splits;
-        K = k;
-    }
-
     public static TimeGridParameters? ReadJson(string jsonPath)
     {
         try
         {
             if (!File.Exists(jsonPath))
-                throw new Exception("File does not exist");
-
-            var sr = new StreamReader(jsonPath);
-            using (sr)
             {
-                return JsonConvert.DeserializeObject<TimeGridParameters>(sr.ReadToEnd());
+                throw new Exception("File does not exist");
             }
+
+            using var sr = new StreamReader(jsonPath);
+            return JsonConvert.DeserializeObject<TimeGridParameters>(sr.ReadToEnd());
         }
         catch (Exception ex)
         {
             Console.WriteLine($"We had problem: {ex.Message}");
-            return null;
+            throw;
         }
     }
 }

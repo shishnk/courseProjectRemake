@@ -1,6 +1,4 @@
-﻿using courseProject;
-
-SpaceGridFactory spaceGridFactory = new();
+﻿SpaceGridFactory spaceGridFactory = new();
 TimeGridFactory timeGridFactory = new();
 
 // FEM fem = FEM.CreateBuilder().SetTest(new Test1())
@@ -15,7 +13,7 @@ FEM fem = FEM.CreateBuilder().SetTest(new Test5())
 .SetSpaceGrid(spaceGridFactory.CreateGrid(GridTypes.SpaceRegular, SpaceGridParameters.ReadJson("input/spaceGrid.jsonc")!.Value))
 .SetTimeGrid(timeGridFactory.CreateGrid(GridTypes.TimeRegular, TimeGridParameters.ReadJson("input/timeGrid.json")!.Value))
 .SetSolverSLAE(new CGMCholesky(1000, 1E-14))
-.SetDiriclhetBoundaries(DirichletBoundary.ReadJson("input/DirichletBoundaries.json")!)
+.SetDirichletBoundaries(DirichletBoundary.ReadJson("input/DirichletBoundaries.json")!)
 .IsPhysical(false);
 
 fem.Compute();

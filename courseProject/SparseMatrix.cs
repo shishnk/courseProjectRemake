@@ -2,20 +2,19 @@ namespace courseProject;
 
 public class SparseMatrix
 {
-    // public fields - its bad, but the readability is better
-    public int[] ig = default!;
-    public int[] jg = default!;
-    public double[] di = default!;
-    public double[] gg = default!;
-    public int Size { get; init; }
+    public int[] Ig { get; }
+    public int[] Jg { get; }
+    public double[] Di { get; }
+    public double[] Gg { get; }
+    public int Size { get; }
 
     public SparseMatrix(int size, int sizeOffDiag)
     {
         Size = size;
-        ig = new int[size + 1];
-        jg = new int[sizeOffDiag];
-        gg = new double[sizeOffDiag];
-        di = new double[size];
+        Ig = new int[size + 1];
+        Jg = new int[sizeOffDiag];
+        Gg = new double[sizeOffDiag];
+        Di = new double[size];
     }
 
     public static Vector<double> operator *(SparseMatrix matrix, Vector<double> vector)
@@ -24,12 +23,12 @@ public class SparseMatrix
 
         for (int i = 0; i < vector.Length; i++)
         {
-            product[i] = matrix.di[i] * vector[i];
+            product[i] = matrix.Di[i] * vector[i];
 
-            for (int j = matrix.ig[i]; j < matrix.ig[i + 1]; j++)
+            for (int j = matrix.Ig[i]; j < matrix.Ig[i + 1]; j++)
             {
-                product[i] += matrix.gg[j] * vector[matrix.jg[j]];
-                product[matrix.jg[j]] += matrix.gg[j] * vector[i];
+                product[i] += matrix.Gg[j] * vector[matrix.Jg[j]];
+                product[matrix.Jg[j]] += matrix.Gg[j] * vector[i];
             }
         }
 
@@ -42,12 +41,12 @@ public class SparseMatrix
 
         for (int i = 0; i < Size; i++)
         {
-            A[i, i] = di[i];
+            A[i, i] = Di[i];
 
-            for (int j = ig[i]; j < ig[i + 1]; j++)
+            for (int j = Ig[i]; j < Ig[i + 1]; j++)
             {
-                A[i, jg[j]] = gg[j];
-                A[jg[j], i] = gg[j];
+                A[i, Jg[j]] = Gg[j];
+                A[Jg[j], i] = Gg[j];
             }
         }
 
@@ -67,11 +66,11 @@ public class SparseMatrix
     {
         for (int i = 0; i < Size; i++)
         {
-            di[i] = 0.0;
+            Di[i] = 0.0;
 
-            for (int k = ig[i]; k < ig[i + 1]; k++)
+            for (int k = Ig[i]; k < Ig[i + 1]; k++)
             {
-                gg[k] = 0.0;
+                Gg[k] = 0.0;
             }
         }
     }

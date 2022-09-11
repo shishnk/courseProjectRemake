@@ -30,7 +30,7 @@ public class FEM
             return this;
         }
 
-        public FEMBuilder SetDiriclhetBoundaries(DirichletBoundary[] boundaries)
+        public FEMBuilder SetDirichletBoundaries(DirichletBoundary[] boundaries)
         {
             _fem._dirichletBoundaries = boundaries;
             return this;
@@ -79,8 +79,10 @@ public class FEM
         try
         {
             ArgumentNullException.ThrowIfNull(_test, $"{nameof(_test)} cannot be null, set the test");
-            ArgumentNullException.ThrowIfNull(_solver, $"{nameof(_solver)} cannot be null, set the method of solving SLAE");
-            ArgumentNullException.ThrowIfNull(_dirichletBoundaries, $"{nameof(_dirichletBoundaries)} cannot be null, set the Dirichlet boundaries");
+            ArgumentNullException.ThrowIfNull(_solver,
+                $"{nameof(_solver)} cannot be null, set the method of solving SLAE");
+            ArgumentNullException.ThrowIfNull(_dirichletBoundaries,
+                $"{nameof(_dirichletBoundaries)} cannot be null, set the Dirichlet boundaries");
 
             Init();
             ConstructPortrait();
@@ -91,13 +93,17 @@ public class FEM
         catch (Exception ex)
         {
             Console.WriteLine($"We had problem: {ex.Message}");
+            throw;
         }
     }
 
     private void Init()
     {
-        _basis = new Basis[] { CubicBasis.Psi1, CubicBasis.Psi2, CubicBasis.Psi3, CubicBasis.Psi4,
-        CubicBasis.Psi5, CubicBasis.Psi6, CubicBasis.Psi7, CubicBasis.Psi8, CubicBasis.Psi9, CubicBasis.Psi10};
+        _basis = new Basis[]
+        {
+            CubicBasis.Psi1, CubicBasis.Psi2, CubicBasis.Psi3, CubicBasis.Psi4,
+            CubicBasis.Psi5, CubicBasis.Psi6, CubicBasis.Psi7, CubicBasis.Psi8, CubicBasis.Psi9, CubicBasis.Psi10
+        };
 
         _stiffnessMatrix = new(10);
         _massMatrix = new(10);
@@ -108,12 +114,11 @@ public class FEM
 
         _layers = new double[3].Select(_ => new double[_spaceGrid.Points.Count]).ToArray();
 
-        _M = new double[10].Select(_ => new double[10].ToArray().
-                         Select(_ => new double[3]).ToArray()).ToArray();
+        _M = new double[10].Select(_ => new double[10].ToArray().Select(_ => new double[3]).ToArray()).ToArray();
 
-        _G = new double[10].Select(_ => new double[10].ToArray().
-                        Select(_ => new double[6].ToArray().
-                        Select(_ => new double[3]).ToArray()).ToArray()).ToArray();
+        _G = new double[10].Select(_ =>
+            new double[10].ToArray().Select(_ => new double[6].ToArray().Select(_ => new double[3]).ToArray())
+                .ToArray()).ToArray();
 
         using StreamReader sr1 = new("input/Grz.txt"), sr2 = new("input/Mrz.txt");
         string[] vars;
@@ -262,18 +267,18 @@ public class FEM
 
         InitSLAE(count);
 
-        _globalMatrix.ig[0] = 0;
+        _globalMatrix.Ig[0] = 0;
 
         for (int i = 0; i < list.Length; i++)
-            _globalMatrix.ig[i + 1] = _globalMatrix.ig[i] + list[i].Count;
+            _globalMatrix.Ig[i + 1] = _globalMatrix.Ig[i] + list[i].Count;
 
         int k = 0;
 
-        for (int i = 0; i < list.Length; i++)
+        foreach (var childList in list)
         {
-            for (int j = 0; j < list[i].Count; j++)
+            foreach (var value in childList)
             {
-                _globalMatrix.jg[k] = list[i][j];
+                _globalMatrix.Jg[k] = value;
                 k++;
             }
         }
@@ -289,24 +294,25 @@ public class FEM
     {
         if (i == j)
         {
-            _globalMatrix.di[i] += value;
+            _globalMatrix.Di[i] += value;
             return;
         }
 
         if (i > j)
         {
-            for (int index = _globalMatrix.ig[i]; index < _globalMatrix.ig[i + 1]; index++)
+            for (int index = _globalMatrix.Ig[i]; index < _globalMatrix.Ig[i + 1]; index++)
             {
-                if (_globalMatrix.jg[index] == j)
+                if (_globalMatrix.Jg[index] == j)
                 {
-                    _globalMatrix.gg[index] += value;
+                    _globalMatrix.Gg[index] += value;
                     return;
                 }
             }
         }
     }
 
-    private void AssemblyGlobalMatrix(int itime = 1, double t03 = 1, double t02 = 1, double t01 = 1, double t13 = 1, double t12 = 1, double t23 = 1)
+    private void AssemblyGlobalMatrix(int itime = 1, double t03 = 1, double t02 = 1, double t01 = 1, double t13 = 1,
+        double t12 = 1, double t23 = 1)
     {
         for (int ielem = 0; ielem < _spaceGrid.Elements.Length; ielem++)
         {
@@ -333,7 +339,8 @@ public class FEM
         }
     }
 
-    private void AssemblyGlobalVector(int itime = 1, int ielem = 1, double t03 = 1, double t02 = 1, double t01 = 1, double t13 = 1, double t12 = 1, double t23 = 1)
+    private void AssemblyGlobalVector(int itime = 1, int ielem = 1, double t03 = 1, double t02 = 1, double t01 = 1,
+        double t13 = 1, double t12 = 1, double t23 = 1)
     {
         double[] qj1 = new double[10];
         double[] qj2 = new double[10];
@@ -365,41 +372,44 @@ public class FEM
         {
             if (itime == 1)
             {
-                _vector[_spaceGrid.Elements[ielem][j]] += Integration.Triangle(_test.F, _basis[j].Invoke, _vertices, _timeGrid.Points[2]) -
-                                                      (-1.0 / t01 * qj1[j]);
+                _vector[_spaceGrid.Elements[ielem][j]] +=
+                    Integration.Triangle(_test.F, _basis[j].Invoke, _vertices, _timeGrid.Points[2]) -
+                    -1.0 / t01 * qj1[j];
             }
             else if (itime == 2)
             {
-                _vector[_spaceGrid.Elements[ielem][j]] += Integration.Triangle(_test.F, _basis[j].Invoke, _vertices, _timeGrid.Points[2]) -
-                                          (t01 / (t02 * t12) * qj2[j]) + (t02 / (t12 * t01) * qj1[j]);
+                _vector[_spaceGrid.Elements[ielem][j]] +=
+                    Integration.Triangle(_test.F, _basis[j].Invoke, _vertices, _timeGrid.Points[2]) -
+                    t01 / (t02 * t12) * qj2[j] + t02 / (t12 * t01) * qj1[j];
             }
             else
             {
-                _vector[_spaceGrid.Elements[ielem][j]] += Integration.Triangle(_test.F, _basis[j].Invoke, _vertices, _timeGrid.Points[itime]) +
-                                                          (t02 * t01 / (t23 * t13 * t03) * qj3[j]) -
-                                                          (t03 * t01 / (t23 * t12 * t02) * qj2[j]) +
-                                                          (t03 * t02 / (t13 * t12 * t01) * qj1[j]);
+                _vector[_spaceGrid.Elements[ielem][j]] +=
+                    Integration.Triangle(_test.F, _basis[j].Invoke, _vertices, _timeGrid.Points[itime]) +
+                    t02 * t01 / (t23 * t13 * t03) * qj3[j] -
+                    t03 * t01 / (t23 * t12 * t02) * qj2[j] +
+                    t03 * t02 / (t13 * t12 * t01) * qj1[j];
             }
         }
     }
 
     private double DeterminantD()
-        => ((_vertices[1].R - _vertices[0].R) * (_vertices[2].Z - _vertices[0].Z)) -
-           ((_vertices[2].R - _vertices[0].R) * (_vertices[1].Z - _vertices[0].Z));
+        => (_vertices[1].R - _vertices[0].R) * (_vertices[2].Z - _vertices[0].Z) -
+           (_vertices[2].R - _vertices[0].R) * (_vertices[1].Z - _vertices[0].Z);
 
     private void CalcAlphas()
     {
         double dD = DeterminantD();
 
-        _alphas[0, 0] = ((_vertices[1].R * _vertices[2].Z) - (_vertices[2].R * _vertices[1].Z)) / dD;
+        _alphas[0, 0] = (_vertices[1].R * _vertices[2].Z - _vertices[2].R * _vertices[1].Z) / dD;
         _alphas[0, 1] = (_vertices[1].Z - _vertices[2].Z) / dD;
         _alphas[0, 2] = (_vertices[2].R - _vertices[1].R) / dD;
 
-        _alphas[1, 0] = ((_vertices[2].R * _vertices[0].Z) - (_vertices[0].R * _vertices[2].Z)) / dD;
+        _alphas[1, 0] = (_vertices[2].R * _vertices[0].Z - _vertices[0].R * _vertices[2].Z) / dD;
         _alphas[1, 1] = (_vertices[2].Z - _vertices[0].Z) / dD;
         _alphas[1, 2] = (_vertices[0].R - _vertices[2].R) / dD;
 
-        _alphas[2, 0] = ((_vertices[0].R * _vertices[1].Z) - (_vertices[1].R * _vertices[0].Z)) / dD;
+        _alphas[2, 0] = (_vertices[0].R * _vertices[1].Z - _vertices[1].R * _vertices[0].Z) / dD;
         _alphas[2, 1] = (_vertices[0].Z - _vertices[1].Z) / dD;
         _alphas[2, 2] = (_vertices[1].R - _vertices[0].R) / dD;
     }
@@ -415,29 +425,47 @@ public class FEM
         {
             for (int j = 0; j < 10; j++)
             {
-                _stiffnessMatrix[i, j] += _G[i][j][0][0] * _vertices[0].R * _spaceGrid.Lambda * ((_alphas[0, 1] * _alphas[0, 1]) + (_alphas[0, 2] * _alphas[0, 2])) * dD;
-                _stiffnessMatrix[i, j] += _G[i][j][0][1] * _vertices[1].R * _spaceGrid.Lambda * ((_alphas[0, 1] * _alphas[0, 1]) + (_alphas[0, 2] * _alphas[0, 2])) * dD;
-                _stiffnessMatrix[i, j] += _G[i][j][0][2] * _vertices[2].R * _spaceGrid.Lambda * ((_alphas[0, 1] * _alphas[0, 1]) + (_alphas[0, 2] * _alphas[0, 2])) * dD;
+                _stiffnessMatrix[i, j] += _G[i][j][0][0] * _vertices[0].R * _spaceGrid.Lambda *
+                                          (_alphas[0, 1] * _alphas[0, 1] + _alphas[0, 2] * _alphas[0, 2]) * dD;
+                _stiffnessMatrix[i, j] += _G[i][j][0][1] * _vertices[1].R * _spaceGrid.Lambda *
+                                          (_alphas[0, 1] * _alphas[0, 1] + _alphas[0, 2] * _alphas[0, 2]) * dD;
+                _stiffnessMatrix[i, j] += _G[i][j][0][2] * _vertices[2].R * _spaceGrid.Lambda *
+                                          (_alphas[0, 1] * _alphas[0, 1] + _alphas[0, 2] * _alphas[0, 2]) * dD;
 
-                _stiffnessMatrix[i, j] += _G[i][j][1][0] * _vertices[0].R * _spaceGrid.Lambda * ((_alphas[0, 1] * _alphas[1, 1]) + (_alphas[0, 2] * _alphas[1, 2])) * dD;
-                _stiffnessMatrix[i, j] += _G[i][j][1][1] * _vertices[1].R * _spaceGrid.Lambda * ((_alphas[0, 1] * _alphas[1, 1]) + (_alphas[0, 2] * _alphas[1, 2])) * dD;
-                _stiffnessMatrix[i, j] += _G[i][j][1][2] * _vertices[2].R * _spaceGrid.Lambda * ((_alphas[0, 1] * _alphas[1, 1]) + (_alphas[0, 2] * _alphas[1, 2])) * dD;
+                _stiffnessMatrix[i, j] += _G[i][j][1][0] * _vertices[0].R * _spaceGrid.Lambda *
+                                          (_alphas[0, 1] * _alphas[1, 1] + _alphas[0, 2] * _alphas[1, 2]) * dD;
+                _stiffnessMatrix[i, j] += _G[i][j][1][1] * _vertices[1].R * _spaceGrid.Lambda *
+                                          (_alphas[0, 1] * _alphas[1, 1] + _alphas[0, 2] * _alphas[1, 2]) * dD;
+                _stiffnessMatrix[i, j] += _G[i][j][1][2] * _vertices[2].R * _spaceGrid.Lambda *
+                                          (_alphas[0, 1] * _alphas[1, 1] + _alphas[0, 2] * _alphas[1, 2]) * dD;
 
-                _stiffnessMatrix[i, j] += _G[i][j][2][0] * _vertices[0].R * _spaceGrid.Lambda * ((_alphas[0, 1] * _alphas[2, 1]) + (_alphas[0, 2] * _alphas[2, 2])) * dD;
-                _stiffnessMatrix[i, j] += _G[i][j][2][1] * _vertices[1].R * _spaceGrid.Lambda * ((_alphas[0, 1] * _alphas[2, 1]) + (_alphas[0, 2] * _alphas[2, 2])) * dD;
-                _stiffnessMatrix[i, j] += _G[i][j][2][2] * _vertices[2].R * _spaceGrid.Lambda * ((_alphas[0, 1] * _alphas[2, 1]) + (_alphas[0, 2] * _alphas[2, 2])) * dD;
+                _stiffnessMatrix[i, j] += _G[i][j][2][0] * _vertices[0].R * _spaceGrid.Lambda *
+                                          (_alphas[0, 1] * _alphas[2, 1] + _alphas[0, 2] * _alphas[2, 2]) * dD;
+                _stiffnessMatrix[i, j] += _G[i][j][2][1] * _vertices[1].R * _spaceGrid.Lambda *
+                                          (_alphas[0, 1] * _alphas[2, 1] + _alphas[0, 2] * _alphas[2, 2]) * dD;
+                _stiffnessMatrix[i, j] += _G[i][j][2][2] * _vertices[2].R * _spaceGrid.Lambda *
+                                          (_alphas[0, 1] * _alphas[2, 1] + _alphas[0, 2] * _alphas[2, 2]) * dD;
 
-                _stiffnessMatrix[i, j] += _G[i][j][3][0] * _vertices[0].R * _spaceGrid.Lambda * ((_alphas[1, 1] * _alphas[1, 1]) + (_alphas[1, 2] * _alphas[1, 2])) * dD;
-                _stiffnessMatrix[i, j] += _G[i][j][3][1] * _vertices[1].R * _spaceGrid.Lambda * ((_alphas[1, 1] * _alphas[1, 1]) + (_alphas[1, 2] * _alphas[1, 2])) * dD;
-                _stiffnessMatrix[i, j] += _G[i][j][3][2] * _vertices[2].R * _spaceGrid.Lambda * ((_alphas[1, 1] * _alphas[1, 1]) + (_alphas[1, 2] * _alphas[1, 2])) * dD;
+                _stiffnessMatrix[i, j] += _G[i][j][3][0] * _vertices[0].R * _spaceGrid.Lambda *
+                                          (_alphas[1, 1] * _alphas[1, 1] + _alphas[1, 2] * _alphas[1, 2]) * dD;
+                _stiffnessMatrix[i, j] += _G[i][j][3][1] * _vertices[1].R * _spaceGrid.Lambda *
+                                          (_alphas[1, 1] * _alphas[1, 1] + _alphas[1, 2] * _alphas[1, 2]) * dD;
+                _stiffnessMatrix[i, j] += _G[i][j][3][2] * _vertices[2].R * _spaceGrid.Lambda *
+                                          (_alphas[1, 1] * _alphas[1, 1] + _alphas[1, 2] * _alphas[1, 2]) * dD;
 
-                _stiffnessMatrix[i, j] += _G[i][j][4][0] * _vertices[0].R * _spaceGrid.Lambda * ((_alphas[1, 1] * _alphas[2, 1]) + (_alphas[1, 2] * _alphas[2, 2])) * dD;
-                _stiffnessMatrix[i, j] += _G[i][j][4][1] * _vertices[1].R * _spaceGrid.Lambda * ((_alphas[1, 1] * _alphas[2, 1]) + (_alphas[1, 2] * _alphas[2, 2])) * dD;
-                _stiffnessMatrix[i, j] += _G[i][j][4][2] * _vertices[2].R * _spaceGrid.Lambda * ((_alphas[1, 1] * _alphas[2, 1]) + (_alphas[1, 2] * _alphas[2, 2])) * dD;
+                _stiffnessMatrix[i, j] += _G[i][j][4][0] * _vertices[0].R * _spaceGrid.Lambda *
+                                          (_alphas[1, 1] * _alphas[2, 1] + _alphas[1, 2] * _alphas[2, 2]) * dD;
+                _stiffnessMatrix[i, j] += _G[i][j][4][1] * _vertices[1].R * _spaceGrid.Lambda *
+                                          (_alphas[1, 1] * _alphas[2, 1] + _alphas[1, 2] * _alphas[2, 2]) * dD;
+                _stiffnessMatrix[i, j] += _G[i][j][4][2] * _vertices[2].R * _spaceGrid.Lambda *
+                                          (_alphas[1, 1] * _alphas[2, 1] + _alphas[1, 2] * _alphas[2, 2]) * dD;
 
-                _stiffnessMatrix[i, j] += _G[i][j][5][0] * _vertices[0].R * _spaceGrid.Lambda * ((_alphas[2, 1] * _alphas[2, 1]) + (_alphas[2, 2] * _alphas[2, 2])) * dD;
-                _stiffnessMatrix[i, j] += _G[i][j][5][1] * _vertices[1].R * _spaceGrid.Lambda * ((_alphas[2, 1] * _alphas[2, 1]) + (_alphas[2, 2] * _alphas[2, 2])) * dD;
-                _stiffnessMatrix[i, j] += _G[i][j][5][2] * _vertices[2].R * _spaceGrid.Lambda * ((_alphas[2, 1] * _alphas[2, 1]) + (_alphas[2, 2] * _alphas[2, 2])) * dD;
+                _stiffnessMatrix[i, j] += _G[i][j][5][0] * _vertices[0].R * _spaceGrid.Lambda *
+                                          (_alphas[2, 1] * _alphas[2, 1] + _alphas[2, 2] * _alphas[2, 2]) * dD;
+                _stiffnessMatrix[i, j] += _G[i][j][5][1] * _vertices[1].R * _spaceGrid.Lambda *
+                                          (_alphas[2, 1] * _alphas[2, 1] + _alphas[2, 2] * _alphas[2, 2]) * dD;
+                _stiffnessMatrix[i, j] += _G[i][j][5][2] * _vertices[2].R * _spaceGrid.Lambda *
+                                          (_alphas[2, 1] * _alphas[2, 1] + _alphas[2, 2] * _alphas[2, 2]) * dD;
             }
         }
 
@@ -480,7 +508,7 @@ public class FEM
             {
                 for (int j = 0; j < 10; j++)
                 {
-                    _massMatrix[i, j] *= (1.0 / t03) + (1.0 / t02) + (1.0 / t01);
+                    _massMatrix[i, j] *= 1.0 / t03 + 1.0 / t02 + 1.0 / t01;
                 }
             }
         }
@@ -493,15 +521,15 @@ public class FEM
 
         int index = 0;
 
-        for (int i = 0; i < _dirichletBoundaries.Length; i++)
+        foreach (var boundary in _dirichletBoundaries)
         {
-            int ielem = _dirichletBoundaries[i].Element;
-            int edge = _dirichletBoundaries[i].Edge;
+            int ielem = boundary.Element;
+            int edge = boundary.Edge;
 
             for (int j = 0; j < 4; j++)
             {
                 boundaries[index++] = (_spaceGrid.Edges[ielem][edge][j],
-                                      _test.U(_spaceGrid.Points[_spaceGrid.Edges[ielem][edge][j]], _timeGrid.Points[itime]));
+                    _test.U(_spaceGrid.Points[_spaceGrid.Edges[ielem][edge][j]], _timeGrid.Points[itime]));
             }
         }
 
@@ -515,30 +543,28 @@ public class FEM
         {
             if (checkBC[i] != -1)
             {
-                _globalMatrix.di[i] = 1;
+                _globalMatrix.Di[i] = 1;
                 _vector[i] = boundaries[checkBC[i]].Value;
 
-                for (int k = _globalMatrix.ig[i]; k < _globalMatrix.ig[i + 1]; k++)
+                for (int k = _globalMatrix.Ig[i]; k < _globalMatrix.Ig[i + 1]; k++)
                 {
-                    index = _globalMatrix.jg[k];
+                    index = _globalMatrix.Jg[k];
 
                     if (checkBC[index] == -1)
-                        _vector[index] -= _globalMatrix.gg[k] * _vector[i];
+                        _vector[index] -= _globalMatrix.Gg[k] * _vector[i];
 
-                    _globalMatrix.gg[k] = 0;
+                    _globalMatrix.Gg[k] = 0;
                 }
             }
             else
             {
-                for (int k = _globalMatrix.ig[i]; k < _globalMatrix.ig[i + 1]; k++)
+                for (int k = _globalMatrix.Ig[i]; k < _globalMatrix.Ig[i + 1]; k++)
                 {
-                    index = _globalMatrix.jg[k];
+                    index = _globalMatrix.Jg[k];
 
-                    if (checkBC[index] != -1)
-                    {
-                        _vector[i] -= _globalMatrix.gg[k] * _vector[index];
-                        _globalMatrix.gg[k] = 0;
-                    }
+                    if (checkBC[index] == -1) continue;
+                    _vector[i] -= _globalMatrix.Gg[k] * _vector[index];
+                    _globalMatrix.Gg[k] = 0;
                 }
             }
         }
@@ -547,7 +573,7 @@ public class FEM
     private void AccountingNeumannBoundaries()
     {
         Vector<double> localVector = new(10);
-        int[] localEdge = new int[4];
+        var localEdge = new int[4];
 
         for (int i = 0; i < _neumannBoundaries!.Length; i++)
         {
@@ -586,9 +612,11 @@ public class FEM
             for (int j = 0; j < 4; j++)
             {
                 localVector[localEdge[j]] = _spaceGrid.Lambda * _neumannBoundaries[i].Value *
-                                  Integration.GaussSegment(_basis[localEdge[j]].Invoke,
-                                  _spaceGrid.Points[_spaceGrid.Edges[ielem][_neumannBoundaries[i].Edge][0]],
-                                  _spaceGrid.Points[_spaceGrid.Edges[ielem][_neumannBoundaries[i].Edge][3]]);
+                                            Integration.GaussSegment(_basis[localEdge[j]].Invoke,
+                                                _spaceGrid.Points[
+                                                    _spaceGrid.Edges[ielem][_neumannBoundaries[i].Edge][0]],
+                                                _spaceGrid.Points[
+                                                    _spaceGrid.Edges[ielem][_neumannBoundaries[i].Edge][3]]);
             }
 
             for (int j = 0; j < 10; j++)
@@ -604,7 +632,8 @@ public class FEM
     {
         try
         {
-            ArgumentNullException.ThrowIfNull(_solver.Solution, $"{nameof(_solver.Solution)} cannot be null, solve problem first");
+            ArgumentNullException.ThrowIfNull(_solver.Solution,
+                $"{nameof(_solver.Solution)} cannot be null, solve problem first");
 
             double[] result = new double[points.Length];
 
@@ -638,14 +667,14 @@ public class FEM
             _vertices[1] = _spaceGrid.Points[_spaceGrid.Elements[ielem][1]];
             _vertices[2] = _spaceGrid.Points[_spaceGrid.Elements[ielem][2]];
 
-            double a = ((_vertices[0].R - point.R) * (_vertices[1].Z - _vertices[0].Z)) -
-                     ((_vertices[1].R - _vertices[0].R) * (_vertices[0].Z - point.Z));
+            double a = (_vertices[0].R - point.R) * (_vertices[1].Z - _vertices[0].Z) -
+                       (_vertices[1].R - _vertices[0].R) * (_vertices[0].Z - point.Z);
 
-            double b = ((_vertices[1].R - point.R) * (_vertices[2].Z - _vertices[1].Z)) -
-                     (_vertices[2].R - (_vertices[1].R * (_vertices[1].Z - point.Z)));
+            double b = (_vertices[1].R - point.R) * (_vertices[2].Z - _vertices[1].Z) -
+                       (_vertices[2].R - _vertices[1].R * (_vertices[1].Z - point.Z));
 
-            double c = ((_vertices[2].R - point.R) * (_vertices[0].Z - _vertices[2].Z)) -
-                     ((_vertices[0].R - _vertices[2].R) * (_vertices[2].Z - point.Z));
+            double c = (_vertices[2].R - point.R) * (_vertices[0].Z - _vertices[2].Z) -
+                       (_vertices[0].R - _vertices[2].R) * (_vertices[2].Z - point.Z);
 
             if ((a >= 0 && b >= 0 && c >= 0) || (a <= 0 && b <= 0 && c <= 0))
                 return ielem;
@@ -671,9 +700,9 @@ public class FEM
         double sum = 0.0;
 
         using StreamWriter sw1 = new("results/err.txt"),
-                           sw2 = new("results/Exact.txt"),
-                           sw3 = new("results/rms.txt");
-                           //sw4 = new("csv2/2.csv", true);
+            sw2 = new("results/Exact.txt"),
+            sw3 = new("results/rms.txt");
+        //sw4 = new("csv2/2.csv", true);
 
         for (int i = 0; i < _spaceGrid.Points.Count; i++)
         {
@@ -717,7 +746,7 @@ public class FEM
     }
 
     public static FEMBuilder CreateBuilder()
-            => new();
+        => new();
 
     // костыль
     public static Matrix GetAlphas()

@@ -29,16 +29,16 @@ public static class Quadratures
     {
         const int n = 5;
         double[] points = { 0.0,
-                            1.0 / 3.0 * Math.Sqrt(5 - (2 * Math.Sqrt(10.0 / 7.0))),
-                            -1.0 / 3.0 * Math.Sqrt(5 - (2 * Math.Sqrt(10.0 / 7.0))),
-                            1.0 / 3.0 * Math.Sqrt(5 + (2 * Math.Sqrt(10.0 / 7.0))),
-                            -1.0 / 3.0 * Math.Sqrt(5 + (2 * Math.Sqrt(10.0 / 7.0)))};
+                            1.0 / 3.0 * Math.Sqrt(5 - 2 * Math.Sqrt(10.0 / 7.0)),
+                            -1.0 / 3.0 * Math.Sqrt(5 - 2 * Math.Sqrt(10.0 / 7.0)),
+                            1.0 / 3.0 * Math.Sqrt(5 + 2 * Math.Sqrt(10.0 / 7.0)),
+                            -1.0 / 3.0 * Math.Sqrt(5 + 2 * Math.Sqrt(10.0 / 7.0))};
 
         double[] weights = { 128.0 / 225.0,
-                            (322.0 + (13.0 * Math.Sqrt(70.0))) / 900.0,
-                            (322.0 + (13.0 * Math.Sqrt(70.0))) / 900.0,
-                            (322.0 - (13.0 * Math.Sqrt(70.0))) / 900.0,
-                            (322.0 - (13.0 * Math.Sqrt(70.0))) / 900.0 };
+                            (322.0 + 13.0 * Math.Sqrt(70.0)) / 900.0,
+                            (322.0 + 13.0 * Math.Sqrt(70.0)) / 900.0,
+                            (322.0 - 13.0 * Math.Sqrt(70.0)) / 900.0,
+                            (322.0 - 13.0 * Math.Sqrt(70.0)) / 900.0 };
 
         for (int i = 0; i < n; i++)
         {

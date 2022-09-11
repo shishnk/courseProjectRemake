@@ -1,4 +1,4 @@
-namespace courseProject;
+namespace courseProject.Grids;
 
 public class TimeRegularGrid : ITimeGrid
 {
@@ -15,10 +15,14 @@ public class TimeRegularGrid : ITimeGrid
         try
         {
             if (gridParameters.Interval.LeftBorder < 0)
+            {
                 throw new Exception("The beginning of the time segment cannot be less than 0");
+            }
 
             if (gridParameters.Splits < 1)
+            {
                 throw new Exception("The number of splits must be greater than or equal to 1");
+            }
 
             _points = new double[gridParameters.Splits + 1];
 
@@ -35,6 +39,7 @@ public class TimeRegularGrid : ITimeGrid
         catch (Exception ex)
         {
             Console.WriteLine($"We had problem: {ex.Message}");
+            throw;
         }
     }
 }
@@ -54,22 +59,25 @@ public class TimeIrregularGrid : ITimeGrid
         try
         {
             if (gridParameters.Interval.LeftBorder < 0)
+            {
                 throw new Exception("The beginning of the time segment cannot be less than 0");
+            }
 
             if (gridParameters.Splits < 1)
+            {
                 throw new Exception("The number of splits must be greater than or equal to 1");
+            }
 
             ArgumentNullException.ThrowIfNull(gridParameters.K, $"{nameof(gridParameters.K)} cannot be null");
 
             _points = new double[gridParameters.Splits + 1];
 
-            double h;
             double sum = 0.0;
 
             for (int k = 0; k < gridParameters.Splits; k++)
                 sum += Math.Pow(gridParameters.K.Value, k);
 
-            h = gridParameters.Interval.Lenght / sum;
+            var h = gridParameters.Interval.Lenght / sum;
             _points[0] = gridParameters.Interval.LeftBorder;
             _points[^1] = gridParameters.Interval.RightBorder;
 
@@ -82,6 +90,7 @@ public class TimeIrregularGrid : ITimeGrid
         catch (Exception ex)
         {
             Console.WriteLine($"We had problem: {ex.Message}");
+            throw;
         }
     }
 }

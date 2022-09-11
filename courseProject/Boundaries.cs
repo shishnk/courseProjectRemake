@@ -7,18 +7,17 @@ public readonly record struct DirichletBoundary(int Element, int Edge)
         try
         {
             if (!File.Exists(jsonPath))
-                throw new Exception("File does not exist");
-
-            var sr = new StreamReader(jsonPath);
-            using (sr)
             {
-                return JsonConvert.DeserializeObject<DirichletBoundary[]>(sr.ReadToEnd());
+                throw new Exception("File does not exist");
             }
+
+            using var sr = new StreamReader(jsonPath);
+            return JsonConvert.DeserializeObject<DirichletBoundary[]>(sr.ReadToEnd());
         }
         catch (Exception ex)
         {
             Console.WriteLine($"We had problem: {ex.Message}");
-            return null;
+            throw;
         }
     }
 }
@@ -30,18 +29,17 @@ public readonly record struct NeumannBoundary(int Element, int Edge, double Valu
         try
         {
             if (!File.Exists(jsonPath))
-                throw new Exception("File does not exist");
-
-            var sr = new StreamReader(jsonPath);
-            using (sr)
             {
-                return JsonConvert.DeserializeObject<NeumannBoundary[]>(sr.ReadToEnd());
+                throw new Exception("File does not exist");
             }
+
+            using var sr = new StreamReader(jsonPath);
+            return JsonConvert.DeserializeObject<NeumannBoundary[]>(sr.ReadToEnd());
         }
         catch (Exception ex)
         {
             Console.WriteLine($"We had problem: {ex.Message}");
-            return null;
+            throw;
         }
     }
 }

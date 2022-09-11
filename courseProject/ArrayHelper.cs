@@ -12,12 +12,7 @@ public static class ArrayHelper
 
     public static double Norm(this double[] array)
     {
-        double result = 0.0;
-
-        for (int i = 0; i < array.Length; i++)
-        {
-            result += array[i] * array[i];
-        }
+        double result = array.Sum(value => value * value);
 
         return Math.Sqrt(result);
     }

@@ -1,4 +1,4 @@
-namespace courseProject;
+namespace courseProject.Grids;
 
 public enum GridTypes
 {
@@ -25,7 +25,8 @@ public class SpaceGridFactory : ISpaceFactory
         {
             GridTypes.SpaceRegular => new SpaceRegularGrid(gridParameters),
 
-            _ => throw new ArgumentOutOfRangeException(nameof(spaceGridType), $"This type of grid does not exist: {spaceGridType}"),
+            _ => throw new ArgumentOutOfRangeException(nameof(spaceGridType),
+                $"This type of grid does not exist: {spaceGridType}"),
         };
     }
 }
@@ -40,7 +41,8 @@ public class TimeGridFactory : ITimeFactory
 
             GridTypes.TimeIrregular => new TimeIrregularGrid(gridParameters),
 
-            _ => throw new ArgumentOutOfRangeException(nameof(timeGridType), $"This type of grid does not exist: {timeGridType}"),
+            _ => throw new ArgumentOutOfRangeException(nameof(timeGridType),
+                $"This type of grid does not exist: {timeGridType}"),
         };
     }
 }
